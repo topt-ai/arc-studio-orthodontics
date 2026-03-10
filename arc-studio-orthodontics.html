@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arc Studio Orthodontics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ivory: #F5F0E8;
+    --ivory-dark: #EDE6D6;
+    --navy: #0D1B2A;
+    --navy-mid: #1A2E42;
+    --gold: #B8965A;
+    --gold-light: #D4AF72;
+    --gold-pale: #F0E4C8;
+    --cream: #FAF7F2;
+    --text-dark: #0D1B2A;
+    --text-mid: #3D4F5E;
+    --text-muted: #7A8A96;
+    --serif: 'Cormorant Garamond', Georgia, serif;
+    --sans: 'Jost', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--text-dark);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+    opacity: 0.6;
+  }
+  .cursor.hovering { width: 20px; height: 20px; background: var(--navy); }
+  .cursor-ring.hovering { width: 52px; height: 52px; opacity: 0.3; }
+
+  /* SCROLL PROGRESS */
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    z-index: 1000;
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    width: calc(100% - 64px);
+    max-width: 1200px;
+  }
+
+  .nav-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    border-radius: 100px;
+    background: rgba(245, 240, 232, 0.15);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(184, 150, 90, 0.2);
+    transition: all 0.5s ease;
+  }
+
+  .nav-pill.scrolled {
+    background: rgba(245, 240, 232, 0.92);
+    border-color: rgba(184, 150, 90, 0.35);
+    box-shadow: 0 8px 40px rgba(13, 27, 42, 0.1);
+  }
+
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ivory);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: color 0.5s;
+  }
+  .nav-pill.scrolled .nav-logo { color: var(--navy); }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(245, 240, 232, 0.75);
+    text-decoration: none;
+    transition: color 0.3s, opacity 0.5s;
+  }
+  .nav-pill.scrolled .nav-links a { color: var(--text-mid); }
+  .nav-links a:hover { color: var(--gold) !important; }
+
+  .nav-cta {
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy) !important;
+    background: var(--gold);
+    padding: 10px 24px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+  }
+  .nav-cta:hover { background: var(--gold-light) !important; transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    height: 100dvh;
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 64px 80px;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1800&q=85&auto=format&fit=crop');
+    background-size: cover;
+    background-position: center 30%;
+    transform: scale(1.05);
+    transition: transform 8s ease;
+  }
+  .hero-bg.loaded { transform: scale(1); }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      160deg,
+      rgba(13, 27, 42, 0.3) 0%,
+      rgba(13, 27, 42, 0.65) 60%,
+      rgba(13, 27, 42, 0.88) 100%
+    );
+  }
+
+  /* noise texture */
+  .hero-overlay::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 780px;
+  }
+
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(3.2rem, 7vw, 6.5rem);
+    font-weight: 300;
+    line-height: 1.02;
+    color: var(--ivory);
+    margin-bottom: 32px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.9s ease 0.5s forwards;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .hero-sub {
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(245, 240, 232, 0.7);
+    max-width: 480px;
+    margin-bottom: 48px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s ease 0.7s forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s ease 0.9s forwards;
+  }
+
+  .btn-primary {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy);
+    background: var(--gold);
+    padding: 16px 36px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: none;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(184, 150, 90, 0.35); }
+
+  .btn-ghost {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(245, 240, 232, 0.8);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .btn-ghost:hover { color: var(--gold-light); gap: 16px; }
+  .btn-ghost .arrow { font-size: 1.1rem; transition: transform 0.3s; }
+  .btn-ghost:hover .arrow { transform: translateX(4px); }
+
+  .hero-stats {
+    position: absolute;
+    bottom: 80px;
+    right: 64px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: flex-end;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.2s forwards;
+  }
+
+  .stat {
+    text-align: right;
+  }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 2.4rem;
+    font-weight: 300;
+    color: var(--ivory);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .stat-divider {
+    width: 1px;
+    height: 40px;
+    background: rgba(184, 150, 90, 0.3);
+    align-self: flex-end;
+  }
+
+  /* MARQUEE */
+  .marquee-bar {
+    background: var(--navy);
+    padding: 16px 0;
+    overflow: hidden;
+    border-top: 1px solid rgba(184, 150, 90, 0.15);
+    border-bottom: 1px solid rgba(184, 150, 90, 0.15);
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 0;
+    white-space: nowrap;
+    animation: marquee 28s linear infinite;
+  }
+
+  .marquee-item {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding-right: 64px;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(245, 240, 232, 0.45);
+  }
+
+  .marquee-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* SERVICES */
+  .services {
+    padding: 140px 64px;
+    background: var(--cream);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 80px;
+  }
+
+  .section-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 4vw, 3.8rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--navy);
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  .section-desc {
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text-muted);
+    max-width: 320px;
+    text-align: right;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: rgba(184, 150, 90, 0.12);
+  }
+
+  .service-card {
+    background: var(--cream);
+    padding: 52px 44px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: none;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--navy);
+    transform: translateY(100%);
+    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+    z-index: 0;
+  }
+
+  .service-card:hover::before { transform: translateY(0); }
+
+  .service-card > * { position: relative; z-index: 1; }
+
+  .service-num {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 32px;
+    display: block;
+    transition: color 0.4s;
+  }
+
+  .service-icon {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 28px;
+    opacity: 0.7;
+    transition: opacity 0.4s, filter 0.4s;
+  }
+
+  .service-card:hover .service-icon { opacity: 1; filter: brightness(1.2); }
+
+  .service-name {
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--navy);
+    margin-bottom: 16px;
+    transition: color 0.4s;
+  }
+
+  .service-card:hover .service-name { color: var(--ivory); }
+  .service-card:hover .service-num { color: var(--gold-light); }
+
+  .service-desc {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+    transition: color 0.4s;
+  }
+
+  .service-card:hover .service-desc { color: rgba(245, 240, 232, 0.6); }
+
+  .service-link {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: gap 0.3s, color 0.4s;
+  }
+
+  .service-card:hover .service-link { color: var(--gold-light); gap: 16px; }
+
+  /* ABOUT SPLIT */
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 720px;
+  }
+
+  .about-visual {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transform: scale(1.08);
+    transition: transform 6s ease;
+  }
+  .about-img.in-view { transform: scale(1); }
+
+  .about-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 60%, var(--cream) 100%);
+  }
+
+  .about-content {
+    background: var(--cream);
+    padding: 100px 80px 100px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .about-quote {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 2.5vw, 2.4rem);
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--navy);
+    margin-bottom: 40px;
+    border-left: 2px solid var(--gold);
+    padding-left: 28px;
+  }
+
+  .about-quote em { font-style: italic; color: var(--gold); }
+
+  .about-body {
+    font-family: var(--sans);
+    font-size: 0.92rem;
+    font-weight: 300;
+    line-height: 1.85;
+    color: var(--text-mid);
+    margin-bottom: 48px;
+  }
+
+  .credentials {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .credential {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .cred-title {
+    font-family: var(--serif);
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--navy);
+  }
+
+  .cred-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* BEFORE AFTER */
+  .before-after-section {
+    padding: 140px 64px;
+    background: var(--ivory);
+  }
+
+  .before-after-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 80px;
+  }
+
+  .ba-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 3/4;
+    cursor: none;
+  }
+
+  .ba-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .ba-card:hover .ba-img { transform: scale(1.05); }
+
+  .ba-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px;
+    background: linear-gradient(transparent, rgba(13, 27, 42, 0.85));
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
+
+  .ba-card:hover .ba-overlay { transform: translateY(0); opacity: 1; }
+
+  .ba-name {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--ivory);
+    margin-bottom: 4px;
+  }
+
+  .ba-treatment {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+  }
+
+  .ba-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(245, 240, 232, 0.92);
+    backdrop-filter: blur(10px);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--navy);
+    font-weight: 400;
+  }
+
+  /* PROCESS */
+  .process {
+    padding: 140px 64px;
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .process::before {
+    content: 'ARC';
+    position: absolute;
+    font-family: var(--serif);
+    font-size: 28rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.018);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    letter-spacing: 0.1em;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .process .section-tag { color: var(--gold-light); }
+  .process .section-title { color: var(--ivory); }
+  .process .section-title em { color: var(--gold-light); }
+
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-top: 80px;
+    background: rgba(184, 150, 90, 0.08);
+  }
+
+  .step {
+    background: var(--navy);
+    padding: 52px 40px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s;
+    cursor: none;
+  }
+
+  .step:hover { background: var(--navy-mid); }
+
+  .step-num {
+    font-family: var(--serif);
+    font-size: 5rem;
+    font-weight: 300;
+    color: rgba(184, 150, 90, 0.15);
+    line-height: 1;
+    margin-bottom: 24px;
+    transition: color 0.4s;
+  }
+
+  .step:hover .step-num { color: rgba(184, 150, 90, 0.3); }
+
+  .step-title {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--ivory);
+    margin-bottom: 16px;
+  }
+
+  .step-desc {
+    font-family: var(--sans);
+    font-size: 0.83rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(245, 240, 232, 0.5);
+  }
+
+  .step-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--gold);
+    width: 0;
+    transition: width 0.5s ease;
+  }
+
+  .step:hover .step-line { width: 100%; }
+
+  /* PRICING */
+  .pricing {
+    padding: 140px 64px;
+    background: var(--cream);
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 80px;
+  }
+
+  .pricing-card {
+    border: 1px solid rgba(184, 150, 90, 0.15);
+    border-radius: 20px;
+    padding: 52px 44px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: none;
+    background: var(--cream);
+  }
+
+  .pricing-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-8px);
+    box-shadow: 0 32px 64px rgba(13, 27, 42, 0.1);
+  }
+
+  .pricing-card.featured {
+    background: var(--navy);
+    border-color: var(--gold);
+  }
+
+  .pricing-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 28px;
+    display: block;
+  }
+
+  .pricing-name {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .pricing-card.featured .pricing-name { color: var(--ivory); }
+
+  .pricing-price {
+    font-family: var(--serif);
+    font-size: 3.2rem;
+    font-weight: 300;
+    color: var(--navy);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .pricing-card.featured .pricing-price { color: var(--ivory); }
+
+  .pricing-period {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+    display: block;
+  }
+
+  .pricing-card.featured .pricing-period { color: rgba(245, 240, 232, 0.4); }
+
+  .pricing-divider {
+    height: 1px;
+    background: rgba(184, 150, 90, 0.15);
+    margin-bottom: 32px;
+  }
+
+  .pricing-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 44px;
+  }
+
+  .pricing-features li {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .pricing-card.featured .pricing-features li { color: rgba(245, 240, 232, 0.65); }
+
+  .pricing-features li::before {
+    content: '';
+    width: 16px;
+    height: 1px;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .pricing-btn {
+    display: block;
+    text-align: center;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: none;
+  }
+
+  .pricing-btn-outline {
+    color: var(--navy);
+    border: 1px solid rgba(184, 150, 90, 0.3);
+  }
+  .pricing-btn-outline:hover { border-color: var(--gold); background: var(--gold-pale); }
+
+  .pricing-btn-fill {
+    color: var(--navy);
+    background: var(--gold);
+  }
+  .pricing-btn-fill:hover { background: var(--gold-light); }
+
+  .featured-badge {
+    position: absolute;
+    top: 28px;
+    right: 28px;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 100px;
+  }
+
+  /* TESTIMONIALS */
+  .testimonials {
+    padding: 140px 64px;
+    background: var(--ivory-dark);
+  }
+
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 80px;
+  }
+
+  .testimonial-card {
+    padding: 44px;
+    background: var(--cream);
+    border-radius: 16px;
+    transition: transform 0.3s;
+    cursor: none;
+  }
+
+  .testimonial-card:hover { transform: translateY(-6px); }
+
+  .stars {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+
+  .star {
+    width: 14px;
+    height: 14px;
+    color: var(--gold);
+  }
+
+  .testimonial-text {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--navy);
+    font-style: italic;
+    margin-bottom: 32px;
+  }
+
+  .testimonial-author {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .author-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .author-name {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--navy);
+  }
+
+  .author-label {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* CTA BAND */
+  .cta-band {
+    padding: 140px 64px;
+    background: var(--navy);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(184, 150, 90, 0.12) 0%, transparent 70%);
+  }
+
+  .cta-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-light);
+    margin-bottom: 24px;
+    display: block;
+    position: relative;
+  }
+
+  .cta-title {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 300;
+    color: var(--ivory);
+    line-height: 1.1;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .cta-title em { font-style: italic; color: var(--gold-light); }
+
+  .cta-sub {
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: rgba(245, 240, 232, 0.55);
+    max-width: 480px;
+    margin: 0 auto 56px;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  .cta-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    position: relative;
+  }
+
+  .btn-gold {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy);
+    background: var(--gold);
+    padding: 18px 44px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(184,150,90,0.3); }
+
+  .btn-outline-light {
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(245, 240, 232, 0.7);
+    border: 1px solid rgba(245, 240, 232, 0.2);
+    padding: 18px 44px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .btn-outline-light:hover { border-color: rgba(245,240,232,0.5); color: var(--ivory); }
+
+  /* FOOTER */
+  footer {
+    background: #080E15;
+    padding: 80px 64px 48px;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 64px;
+    margin-bottom: 64px;
+    padding-bottom: 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .footer-brand {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: var(--ivory);
+    margin-bottom: 16px;
+  }
+
+  .footer-tagline {
+    font-family: var(--sans);
+    font-size: 0.83rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(245,240,232,0.35);
+    max-width: 280px;
+    margin-bottom: 28px;
+  }
+
+  .footer-contact {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+  }
+
+  .footer-col-title {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.3);
+    margin-bottom: 24px;
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .footer-links a {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: rgba(245,240,232,0.5);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .footer-links a:hover { color: var(--gold-light); }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: rgba(245,240,232,0.2);
+  }
+
+  .footer-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.25);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4CAF81;
+    animation: pulse-dot 2s infinite;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* SCROLL ANIMATIONS */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    .hero { padding: 0 40px 60px; }
+    .hero-stats { right: 40px; bottom: 60px; }
+    .services, .before-after-section, .process, .pricing, .testimonials, .cta-band { padding: 100px 40px; }
+    .about-content { padding: 80px 40px; }
+    .services-grid, .before-after-grid, .process-steps, .pricing-grid, .testimonials-grid { grid-template-columns: 1fr 1fr; }
+    footer { padding: 60px 40px 40px; }
+    .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hero { padding: 0 24px 60px; }
+    .hero-stats { display: none; }
+    .services, .before-after-section, .process, .pricing, .testimonials, .cta-band { padding: 80px 24px; }
+    .section-header { flex-direction: column; gap: 20px; }
+    .section-desc { text-align: left; }
+    .services-grid, .before-after-grid, .process-steps, .pricing-grid, .testimonials-grid { grid-template-columns: 1fr; }
+    .about { grid-template-columns: 1fr; }
+    .about-visual { height: 400px; }
+    .about-img-overlay { background: linear-gradient(transparent, var(--cream)); bottom: 0; top: auto; height: 40%; }
+    .about-content { padding: 60px 24px; }
+    footer { padding: 60px 24px 40px; }
+    .footer-top { grid-template-columns: 1fr; gap: 40px; }
+    .footer-bottom { flex-direction: column; gap: 16px; }
+    .cta-actions { flex-direction: column; align-items: center; }
+    nav { width: calc(100% - 32px); top: 16px; }
+    .nav-pill { padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-pill" id="navPill">
+    <a href="#" class="nav-logo">Arc Studio</a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">Practice</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#contact" class="nav-cta">Book Consult</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <span class="hero-label">Orthodontics / San Francisco, CA</span>
+    <h1 class="hero-title">Where precision<br>meets <em>artistry.</em></h1>
+    <p class="hero-sub">Arc Studio is a boutique orthodontic practice dedicated to crafting confident smiles with clinical precision and an unwavering eye for detail.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Book a Consultation</a>
+      <a href="#results" class="btn-ghost">See Our Work <span class="arrow">→</span></a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">2,400+</div>
+      <div class="stat-label">Smiles Completed</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">14</div>
+      <div class="stat-label">Years of Practice</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <div class="stat-num">4.9</div>
+      <div class="stat-label">Average Rating</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-bar">
+  <div class="marquee-track" id="marqueeTrack">
+    <div class="marquee-item"><span class="marquee-dot"></span>Invisalign Certified Provider</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Custom Metal Braces</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Ceramic Braces</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Retainers & Maintenance</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Adult Orthodontics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Teen Treatment Plans</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>3D Smile Mapping</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Interest-Free Financing</div>
+    <!-- duplicated for seamless loop -->
+    <div class="marquee-item"><span class="marquee-dot"></span>Invisalign Certified Provider</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Custom Metal Braces</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Ceramic Braces</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Retainers & Maintenance</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Adult Orthodontics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Teen Treatment Plans</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>3D Smile Mapping</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Interest-Free Financing</div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">Treatment Options</div>
+      <h2 class="section-title">Every smile,<br><em>individually crafted.</em></h2>
+    </div>
+    <p class="section-desc">We offer a full range of orthodontic solutions tailored to your lifestyle, timeline, and goals.</p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card reveal reveal-delay-1">
+      <span class="service-num">01</span>
+      <svg class="service-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="20" width="36" height="24" rx="4" stroke="#B8965A" stroke-width="1.5"/>
+        <path d="M16 20V16a10 10 0 0120 0v4" stroke="#B8965A" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="26" cy="32" r="3" fill="#B8965A" opacity="0.6"/>
+      </svg>
+      <h3 class="service-name">Invisalign</h3>
+      <p class="service-desc">Clear, removable aligners custom-mapped to your teeth. Near-invisible treatment that fits your life with no dietary restrictions.</p>
+      <a href="#" class="service-link">Learn more →</a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-2">
+      <span class="service-num">02</span>
+      <svg class="service-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 32 Q20 18 26 26 Q32 34 42 20" stroke="#B8965A" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="10" cy="32" r="3" fill="#B8965A" opacity="0.6"/>
+        <circle cx="26" cy="26" r="3" fill="#B8965A" opacity="0.6"/>
+        <circle cx="42" cy="20" r="3" fill="#B8965A" opacity="0.6"/>
+      </svg>
+      <h3 class="service-name">Metal Braces</h3>
+      <p class="service-desc">The gold standard in orthodontic treatment. Precise, reliable, and ideal for complex cases requiring detailed movement control.</p>
+      <a href="#" class="service-link">Learn more →</a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-3">
+      <span class="service-num">03</span>
+      <svg class="service-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14 26 Q26 14 38 26" stroke="#B8965A" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M14 32 Q26 44 38 32" stroke="#B8965A" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+        <circle cx="26" cy="26" r="4" stroke="#B8965A" stroke-width="1.5"/>
+      </svg>
+      <h3 class="service-name">Ceramic Braces</h3>
+      <p class="service-desc">Tooth-colored brackets that blend with your smile. The strength of traditional braces with a fraction of the visibility.</p>
+      <a href="#" class="service-link">Learn more →</a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-1">
+      <span class="service-num">04</span>
+      <svg class="service-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 36 C10 36 18 16 26 16 C34 16 42 36 42 36" stroke="#B8965A" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="10" y1="40" x2="42" y2="40" stroke="#B8965A" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h3 class="service-name">Retainers</h3>
+      <p class="service-desc">Custom-fitted retention to protect your investment. Clear or wire retainers that keep your smile exactly where it should be.</p>
+      <a href="#" class="service-link">Learn more →</a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-2">
+      <span class="service-num">05</span>
+      <svg class="service-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="12" y="12" width="28" height="28" rx="14" stroke="#B8965A" stroke-width="1.5"/>
+        <path d="M20 26 L24 30 L32 22" stroke="#B8965A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h3 class="service-name">3D Smile Preview</h3>
+      <p class="service-desc">See your future smile before treatment begins. Our advanced imaging gives you a precise digital preview of your final result.</p>
+      <a href="#" class="service-link">Learn more →</a>
+    </div>
+
+    <div class="service-card reveal reveal-delay-3">
+      <span class="service-num">06</span>
+      <svg class="service-icon" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M26 10 L30 20 L42 20 L32 27 L36 38 L26 31 L16 38 L20 27 L10 20 L22 20 Z" stroke="#B8965A" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <h3 class="service-name">Teen Treatment</h3>
+      <p class="service-desc">Specialized plans designed for growing smiles. Built-in compliance indicators and replacement aligners for an active teen lifestyle.</p>
+      <a href="#" class="service-link">Learn more →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-visual">
+    <img
+      src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=900&q=85&auto=format&fit=crop"
+      alt="Dr. Elena Vasquez"
+      class="about-img"
+      id="aboutImg"
+    >
+    <div class="about-img-overlay"></div>
+  </div>
+  <div class="about-content">
+    <div class="section-tag reveal">The Practice</div>
+    <blockquote class="about-quote reveal reveal-delay-1">
+      "Orthodontics is not just about straight teeth. It is about the <em>confidence</em> that follows."
+    </blockquote>
+    <p class="about-body reveal reveal-delay-2">
+      Dr. Elena Vasquez founded Arc Studio in 2011 with a single conviction: that every patient deserves the time, care, and craft that most practices reserve for their most complex cases. With a background in both biomedical engineering and clinical orthodontics, she brings a rare combination of technical precision and artistic sensibility to every treatment plan.
+    </p>
+    <div class="credentials reveal reveal-delay-3">
+      <div class="credential">
+        <span class="cred-title">Board Certified</span>
+        <span class="cred-label">American Board of Orthodontics</span>
+      </div>
+      <div class="credential">
+        <span class="cred-title">Invisalign Elite</span>
+        <span class="cred-label">Diamond Provider Status</span>
+      </div>
+      <div class="credential">
+        <span class="cred-title">UC San Francisco</span>
+        <span class="cred-label">Orthodontics Residency</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BEFORE AFTER -->
+<section class="before-after-section" id="results">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">Patient Results</div>
+      <h2 class="section-title">Real patients,<br><em>real outcomes.</em></h2>
+    </div>
+    <p class="section-desc">Every case in our gallery represents months of precise planning and careful execution.</p>
+  </div>
+
+  <div class="before-after-grid">
+    <div class="ba-card reveal reveal-delay-1">
+      <img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=600&q=85&auto=format&fit=crop" alt="Patient Result" class="ba-img">
+      <div class="ba-badge">18 months</div>
+      <div class="ba-overlay">
+        <div class="ba-name">Sarah M.</div>
+        <div class="ba-treatment">Invisalign Full</div>
+      </div>
+    </div>
+    <div class="ba-card reveal reveal-delay-2">
+      <img src="https://images.unsplash.com/photo-1607990281513-a9dff3e5fa7a?w=600&q=85&auto=format&fit=crop" alt="Patient Result" class="ba-img">
+      <div class="ba-badge">14 months</div>
+      <div class="ba-overlay">
+        <div class="ba-name">James T.</div>
+        <div class="ba-treatment">Ceramic Braces</div>
+      </div>
+    </div>
+    <div class="ba-card reveal reveal-delay-3">
+      <img src="https://images.unsplash.com/photo-1571772996211-2f02c9727629?w=600&q=85&auto=format&fit=crop" alt="Patient Result" class="ba-img">
+      <div class="ba-badge">22 months</div>
+      <div class="ba-overlay">
+        <div class="ba-name">Priya K.</div>
+        <div class="ba-treatment">Metal Braces</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">How It Works</div>
+      <h2 class="section-title">Your path to<br><em>a new smile.</em></h2>
+    </div>
+    <p class="section-desc" style="color: rgba(245,240,232,0.4); text-align:right;">A clear, four-step journey from consultation to the final reveal.</p>
+  </div>
+
+  <div class="process-steps">
+    <div class="step reveal reveal-delay-1">
+      <div class="step-num">01</div>
+      <h3 class="step-title">Free Consultation</h3>
+      <p class="step-desc">Meet Dr. Vasquez for a no-pressure conversation about your smile goals. Includes digital X-rays and a full clinical assessment.</p>
+      <div class="step-line"></div>
+    </div>
+    <div class="step reveal reveal-delay-2">
+      <div class="step-num">02</div>
+      <h3 class="step-title">3D Smile Mapping</h3>
+      <p class="step-desc">We take a precise digital scan of your teeth and model your projected outcome so you can see the final result before committing.</p>
+      <div class="step-line"></div>
+    </div>
+    <div class="step reveal reveal-delay-3">
+      <div class="step-num">03</div>
+      <h3 class="step-title">Custom Treatment</h3>
+      <p class="step-desc">Your treatment plan is built around your anatomy, timeline, and budget. Progress visits every 6 to 8 weeks with direct access to our team.</p>
+      <div class="step-line"></div>
+    </div>
+    <div class="step reveal reveal-delay-4">
+      <div class="step-num">04</div>
+      <h3 class="step-title">The Reveal</h3>
+      <p class="step-desc">Braces off, retainers fitted, and photos taken. Your smile is now yours to keep, and we are here for the long term to make sure it stays that way.</p>
+      <div class="step-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">Investment</div>
+      <h2 class="section-title">Transparent pricing,<br><em>no surprises.</em></h2>
+    </div>
+    <p class="section-desc">All plans include free consultation, digital records, and lifetime retainer checks.</p>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="pricing-card reveal reveal-delay-1">
+      <span class="pricing-tag">Standard</span>
+      <div class="pricing-name">Metal Braces</div>
+      <div class="pricing-price">$3,800</div>
+      <span class="pricing-period">or $199/mo · 0% interest</span>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>Full metal bracket system</li>
+        <li>Monthly adjustment visits</li>
+        <li>Digital treatment tracking</li>
+        <li>Two sets of retainers</li>
+        <li>Lifetime retainer checks</li>
+      </ul>
+      <a href="#contact" class="pricing-btn pricing-btn-outline">Get Started</a>
+    </div>
+
+    <div class="pricing-card featured reveal reveal-delay-2">
+      <div class="featured-badge">Most Popular</div>
+      <span class="pricing-tag">Signature</span>
+      <div class="pricing-name">Invisalign Full</div>
+      <div class="pricing-price">$5,200</div>
+      <span class="pricing-period">or $269/mo · 0% interest</span>
+      <div class="pricing-divider" style="background: rgba(184,150,90,0.3);"></div>
+      <ul class="pricing-features">
+        <li>Full Invisalign series</li>
+        <li>Unlimited refinements</li>
+        <li>Priority appointment access</li>
+        <li>3D smile preview session</li>
+        <li>Vivera retainer set</li>
+        <li>Emergency visit coverage</li>
+      </ul>
+      <a href="#contact" class="pricing-btn pricing-btn-fill">Book Consultation</a>
+    </div>
+
+    <div class="pricing-card reveal reveal-delay-3">
+      <span class="pricing-tag">Aesthetic</span>
+      <div class="pricing-name">Ceramic Braces</div>
+      <div class="pricing-price">$4,400</div>
+      <span class="pricing-period">or $229/mo · 0% interest</span>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>Tooth-colored brackets</li>
+        <li>Monthly adjustment visits</li>
+        <li>Digital treatment tracking</li>
+        <li>Two sets of retainers</li>
+        <li>Lifetime retainer checks</li>
+      </ul>
+      <a href="#contact" class="pricing-btn pricing-btn-outline">Get Started</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">Patient Stories</div>
+      <h2 class="section-title">Heard from<br><em>our patients.</em></h2>
+    </div>
+  </div>
+
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal reveal-delay-1">
+      <div class="stars">
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+      </div>
+      <p class="testimonial-text">"I had Invisalign with Dr. Vasquez and the entire experience was unlike any other dental office I have ever been to. Calm, precise, and the results were better than I expected."</p>
+      <div class="testimonial-author">
+        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&q=80&auto=format&fit=crop&crop=faces" alt="Sarah" class="author-avatar">
+        <div>
+          <div class="author-name">Sarah Mitchell</div>
+          <div class="author-label">Invisalign Patient · 2024</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card reveal reveal-delay-2">
+      <div class="stars">
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+      </div>
+      <p class="testimonial-text">"My daughter did 18 months with ceramic braces here. The team remembered her name every visit, tracked her progress carefully, and the final result was stunning."</p>
+      <div class="testimonial-author">
+        <img src="https://images.unsplash.com/photo-1494790108755-2616b332c4f5?w=100&q=80&auto=format&fit=crop&crop=faces" alt="Linda" class="author-avatar">
+        <div>
+          <div class="author-name">Linda Chen</div>
+          <div class="author-label">Parent · Ceramic Braces · 2023</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card reveal reveal-delay-3">
+      <div class="stars">
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+        <svg class="star" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.8 5.5H14l-4.6 3.4 1.8 5.5L7 11 2.8 14.4l1.8-5.5L0 5.5h5.2z"/></svg>
+      </div>
+      <p class="testimonial-text">"As an adult getting braces for the first time at 34, I was nervous. Arc Studio made the whole thing feel considered and respectful. Worth every cent."</p>
+      <div class="testimonial-author">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80&auto=format&fit=crop&crop=faces" alt="Marcus" class="author-avatar">
+        <div>
+          <div class="author-name">Marcus Reid</div>
+          <div class="author-label">Adult Treatment · Metal Braces</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band" id="contact">
+  <span class="cta-tag">Begin Your Journey</span>
+  <h2 class="cta-title">Ready for your<br><em>best smile?</em></h2>
+  <p class="cta-sub">Your consultation is free, your 3D preview is included, and your first step is just one click away.</p>
+  <div class="cta-actions">
+    <a href="#" class="btn-gold">Book Free Consultation</a>
+    <a href="tel:+14155550192" class="btn-outline-light">(415) 555-0192</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">Arc Studio Orthodontics</div>
+      <p class="footer-tagline">A boutique orthodontic practice in San Francisco, dedicated to clinical precision and the art of the perfect smile.</p>
+      <div class="footer-contact">hello@arcstudio.com</div>
+    </div>
+    <div>
+      <div class="footer-col-title">Services</div>
+      <ul class="footer-links">
+        <li><a href="#">Invisalign</a></li>
+        <li><a href="#">Metal Braces</a></li>
+        <li><a href="#">Ceramic Braces</a></li>
+        <li><a href="#">Retainers</a></li>
+        <li><a href="#">3D Smile Preview</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Practice</div>
+      <ul class="footer-links">
+        <li><a href="#">About Dr. Vasquez</a></li>
+        <li><a href="#">Patient Results</a></li>
+        <li><a href="#">New Patients</a></li>
+        <li><a href="#">Insurance</a></li>
+        <li><a href="#">Financing</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Hours</div>
+      <ul class="footer-links">
+        <li><a href="#">Mon - Thu: 8am - 6pm</a></li>
+        <li><a href="#">Friday: 8am - 4pm</a></li>
+        <li><a href="#">Saturday: 9am - 2pm</a></li>
+        <li><a href="#">Sunday: Closed</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 Arc Studio Orthodontics. All rights reserved.</span>
+    <div class="footer-status">
+      <span class="status-dot"></span>
+      Practice accepting new patients
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+  });
+
+  function animateCursorRing() {
+    ringX += (mouseX - ringX) * 0.12;
+    ringY += (mouseY - ringY) * 0.12;
+    cursorRing.style.left = ringX + 'px';
+    cursorRing.style.top = ringY + 'px';
+    requestAnimationFrame(animateCursorRing);
+  }
+  animateCursorRing();
+
+  document.querySelectorAll('a, button, .service-card, .step, .ba-card, .testimonial-card, .pricing-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.classList.add('hovering');
+      cursorRing.classList.add('hovering');
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.classList.remove('hovering');
+      cursorRing.classList.remove('hovering');
+    });
+  });
+
+  // Scroll progress
+  const scrollProgress = document.getElementById('scrollProgress');
+  window.addEventListener('scroll', () => {
+    const totalHeight = document.body.scrollHeight - window.innerHeight;
+    const progress = (window.scrollY / totalHeight) * 100;
+    scrollProgress.style.width = progress + '%';
+  });
+
+  // Nav scroll
+  const navPill = document.getElementById('navPill');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) {
+      navPill.classList.add('scrolled');
+    } else {
+      navPill.classList.remove('scrolled');
+    }
+  });
+
+  // Hero BG loaded
+  const heroBg = document.getElementById('heroBg');
+  setTimeout(() => heroBg.classList.add('loaded'), 100);
+
+  // About image parallax on scroll into view
+  const aboutImg = document.getElementById('aboutImg');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) aboutImg.classList.add('in-view');
+    });
+  }, { threshold: 0.3 });
+  if (aboutImg) observer.observe(aboutImg);
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(r => revealObserver.observe(r));
+</script>
+
+</body>
+</html>
